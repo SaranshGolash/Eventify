@@ -20,18 +20,27 @@ const CreateEvent = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        data.append(key, formData[key]);
+      });
+
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json' // Assuming JSON for now, multipart if file upload is added
+          'Content-Type': 'multipart/form-data'
         },
       };
       
-      await axios.post('http://localhost:5000/api/events', formData, config);
+      await axios.post('http://localhost:5000/api/events', data, config);
       navigate('/events');
     } catch (error) {
       console.error('Error creating event:', error.response?.data || error.message);
@@ -58,6 +67,7 @@ const CreateEvent = () => {
                 onChange={handleChange}
                 placeholder="e.g. Annual Tech Symposium"
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                required
               />
             </div>
 
@@ -94,6 +104,7 @@ const CreateEvent = () => {
                   onChange={handleChange}
                   placeholder="e.g. Auditorium A"
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                  required
                 />
               </div>
             </div>
@@ -112,8 +123,15 @@ const CreateEvent = () => {
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-2"><FaFileImage /> Cover Image</label>
-              <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer">
-                <p className="text-gray-500">Click to upload or drag and drop</p>
+              <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors cursor-pointer relative">
+                <input 
+                  type="file" 
+                  name="image" 
+                  onChange={handleImageChange} 
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <p className="text-gray-500">{formData.image ? formData.image.name : 'Click to upload or drag and drop'}</p>
                 <p className="text-xs text-gray-400 mt-1">SVG, PNG, JPG or GIF (max. 800x400px)</p>
               </div>
             </div>

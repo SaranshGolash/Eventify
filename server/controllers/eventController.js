@@ -8,9 +8,16 @@ export const createEvent = async (req, res) => {
       return res.status(400).json({ message: 'Title, Start Time, End Time, and Location are required.' });
     }
 
+    let banner_url = null;
+    if (req.file) {
+      // Create full URL (assuming server is on localhost:5000)
+      banner_url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
+
     const eventData = {
       ...req.body,
-      organizer_id: req.user.id
+      organizer_id: req.user.id,
+      banner_url: banner_url || req.body.banner_url || null
     };
 
     const newEvent = await EventModel.createEvent(eventData);
@@ -38,10 +45,6 @@ export const getEvent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    // Check if user is registered if logged in? 
-    // Usually this is done in a separate endpoint or added to response if auth is passed.
-    // simpler to have a separate call or simple check.
-    
     res.json(event);
   } catch (error) {
     console.error(error);
@@ -61,11 +64,29 @@ export const updateEvent = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this event' });
     }
 
-    const updatedEvent = await EventModel.updateEvent(req.params.id, req.body);
+    const ALLOWED_FIELDS = [
+      'title', 'description', 'start_time', 'end_time', 
+      'location', 'budget', 'status', 'is_public', 'banner_url'
+    ];
+
+    let updatedData = {};
+    
+    // Filter req.body to only allowed fields
+    Object.keys(req.body).forEach(key => {
+      if (ALLOWED_FIELDS.includes(key)) {
+        updatedData[key] = req.body[key];
+      }
+    });
+
+    if (req.file) {
+      updatedData.banner_url = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    }
+
+    const updatedEvent = await EventModel.updateEvent(req.params.id, updatedData);
     res.json(updatedEvent);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to update event' });
+    console.error('Update Event Error:', error);
+    res.status(500).json({ message: 'Failed to update event', error: error.message });
   }
 };
 

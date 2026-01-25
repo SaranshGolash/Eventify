@@ -49,8 +49,24 @@ const ViewEventDetails = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const config = { headers: { Authorization: `Bearer ${token}` } };
-      const response = await axios.put(`http://localhost:5000/api/events/${id}`, formData, config);
+      const data = new FormData();
+      Object.keys(formData).forEach(key => {
+        // Handle existing image path or new file
+        if (key === 'image' && formData[key]) {
+          data.append('image', formData[key]);
+        } else if (key !== 'banner_url' && key !== 'image') {
+           data.append(key, formData[key]); 
+        }
+      });
+      
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
+      };
+
+      const response = await axios.put(`http://localhost:5000/api/events/${id}`, data, config);
       setEvent(response.data);
       setIsEditing(false);
       alert('Event updated successfully!');
@@ -62,6 +78,10 @@ const ViewEventDetails = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
+  const handleImageChange = (e) => {
+    setFormData({ ...formData, image: e.target.files[0] });
   };
 
   if (loading) return <div className="flex justify-center items-center h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
@@ -128,6 +148,10 @@ const ViewEventDetails = () => {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                       <input type="text" name="location" value={formData.location} onChange={handleChange} className="w-full p-2 border rounded-lg" />
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Update Banner</label>
+                    <input type="file" name="image" onChange={handleImageChange} accept="image/*" className="w-full p-2 border rounded-lg" />
                   </div>
                   <div className="flex gap-4 mt-4">
                     <button type="submit" className="bg-primary text-white px-6 py-2 rounded-lg">Save Changes</button>
