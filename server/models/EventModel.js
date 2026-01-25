@@ -32,7 +32,6 @@ export const createEvent = async (eventData) => {
 };
 
 export const getAllEvents = async () => {
-  // Join with clubs to get club name if available
   const query = `
     SELECT e.*, c.name as club_name, u.name as organizer_name
     FROM events e
@@ -78,5 +77,21 @@ export const updateEvent = async (id, eventData) => {
 export const deleteEvent = async (id) => {
   const query = 'DELETE FROM events WHERE id = $1 RETURNING id;';
   const result = await pool.query(query, [id]);
+  return result.rows[0];
+};
+
+export const registerUserForEvent = async (userId, eventId) => {
+  const query = `
+    INSERT INTO event_registrations (user_id, event_id)
+    VALUES ($1, $2)
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [userId, eventId]);
+  return result.rows[0];
+};
+
+export const checkRegistration = async (userId, eventId) => {
+  const query = 'SELECT * FROM event_registrations WHERE user_id = $1 AND event_id = $2';
+  const result = await pool.query(query, [userId, eventId]);
   return result.rows[0];
 };

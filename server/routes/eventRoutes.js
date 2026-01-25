@@ -4,7 +4,8 @@ import {
   getEvents, 
   getEvent, 
   updateEvent, 
-  deleteEvent 
+  deleteEvent,
+  registerForEvent
 } from '../controllers/eventController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -18,5 +19,7 @@ router.route('/:id')
   .get(getEvent)
   .put(protect, updateEvent)
   .delete(protect, deleteEvent);
+
+router.post('/:id/register', protect, registerForEvent);
 
 export default router;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaMapMarkerAlt, FaFileImage, FaAlignLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const CreateEvent = () => {
@@ -118,7 +119,7 @@ const CreateEvent = () => {
             </div>
 
             <div className="pt-4 flex justify-end gap-4">
-              <button type="button" className="px-6 py-3 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition-colors">Cancel</button>
+              <Link to="/events" type="button" className="px-6 py-3 text-gray-600 font-medium hover:bg-gray-50 rounded-xl transition-colors">Cancel</Link>
               <button
                 type="submit"
                 className="px-8 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-indigo-600 transition-all shadow-lg shadow-primary/30"

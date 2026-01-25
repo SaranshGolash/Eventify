@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaCalendarAlt, FaUsers, FaClipboardList, FaArrowRight } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 
 const FeatureCard = ({ icon, title, description, delay }) => (
   <motion.div
@@ -19,6 +20,7 @@ const FeatureCard = ({ icon, title, description, delay }) => (
 );
 
 const Home = () => {
+  const { user } = useAuth();
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -59,18 +61,29 @@ const Home = () => {
               transition={{ delay: 0.6, duration: 0.5 }}
               className="flex flex-col sm:flex-row items-center justify-center gap-4"
             >
-              <Link
-                to="/register"
-                className="px-8 py-4 bg-primary text-white rounded-full font-semibold text-lg hover:bg-indigo-600 transition-all shadow-lg shadow-primary/30 flex items-center gap-2"
+              {!user && (
+                <Link
+                  to="/register"
+                  className="px-8 py-4 bg-primary text-white rounded-full font-semibold text-lg hover:bg-indigo-600 transition-all shadow-lg shadow-primary/30 flex items-center gap-2"
+                >
+                  Get Started Now <FaArrowRight />
+                </Link>
+              )}
+              {user ? (
+                <Link
+                to="/events"
+                className="px-8 py-4 bg-primary text-white border border-gray-200 rounded-full font-semibold text-lg hover:bg-indigo-600 transition-all shadow-lg shadow-primary/30"
               >
-                Get Started Now <FaArrowRight />
+                Explore Events
               </Link>
-              <Link
+              ) : (
+                <Link
                 to="/events"
                 className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full font-semibold text-lg hover:bg-gray-50 transition-all"
               >
                 Explore Events
               </Link>
+              )}
             </motion.div>
           </div>
 
