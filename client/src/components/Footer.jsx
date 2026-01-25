@@ -1,72 +1,30 @@
-import React from "react";
+import React from 'react';
+import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
-function Footer() {
-    return(
-        <footer style={styles.footer}>
-      <div style={styles.container}>
-        {/* Column 1 */}
-        <div style={styles.brandColumn}>
-          <Link to="/" style={styles.logo}>
-            Eventify
-          </Link>
-          <span style={styles.tagline}>
-            A safe and secure platform for organizing events and registering oneself for events.
-          </span>
+const Footer = () => {
+  return (
+    <footer className="bg-white border-t border-gray-100 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-6 md:mb-0">
+            <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Eventify
+            </span>
+            <p className="text-gray-500 mt-2 text-sm">Empowering Campus Communities</p>
+          </div>
+
+          <div className="flex space-x-6">
+            <a href="#" className="text-gray-400 hover:text-primary transition-colors text-xl"><FaGithub /></a>
+            <a href="#" className="text-gray-400 hover:text-primary transition-colors text-xl"><FaTwitter /></a>
+            <a href="#" className="text-gray-400 hover:text-primary transition-colors text-xl"><FaLinkedin /></a>
+          </div>
         </div>
-
-        {/* Column 2 */}
-        <div style={styles.linksColumn}>
-          <span style={styles.columnTitle}>Quick Links</span>
-          <FooterLink to="/about">About</FooterLink>
-          <FooterLink to="/events">Events</FooterLink>
-          <FooterLink to="/support">Support</FooterLink>
-        </div>
-
-        {/* Column 3 */}
-        <div style={styles.linksColumn}>
-          <span style={styles.columnTitle}>Legal</span>
-          <FooterLink to="/privacy">Privacy Policy</FooterLink>
-          <FooterLink to="/terms">Terms of Service</FooterLink>
-          <FooterLink to="/cookie">Cookie Policy</FooterLink>
-        </div>
-      </div>
-
-      <div style={styles.divider}></div>
-
-      <div style={styles.bottomBar}>
-        <span>© 2026 Eventify. All rights reserved.</span>
-        <div style={{ display: "flex", gap: "20px" }}>
-          <span style={{ cursor: "pointer" }}>Twitter</span>
-          <span style={{ cursor: "pointer" }}>LinkedIn</span>
-          <span style={{ cursor: "pointer" }}>Instagram</span>
+        <div className="border-t border-gray-100 mt-8 pt-8 text-center text-gray-400 text-sm">
+          &copy; {new Date().getFullYear()} Eventify. All rights reserved.
         </div>
       </div>
     </footer>
   );
-}
+};
 
-// Helper Component for Links with Hover Effect
-function FooterLink({ to, children }) {
-  const [hover, setHover] = useState(false);
-
-  const style = {
-    color: hover ? "#a0f1bd" : "#ffffff",
-    textDecoration: "none",
-    fontSize: "16px",
-    opacity: hover ? 1 : 0.8,
-    transition: "all 0.2s ease",
-    cursor: "pointer",
-    width: "fit-content",
-  };
-
-  return (
-    <Link
-      to={to}
-      style={style}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      {children}
-    </Link>
-  );
-}
+export default Footer;
