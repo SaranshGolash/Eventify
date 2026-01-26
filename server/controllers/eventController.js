@@ -66,7 +66,8 @@ export const updateEvent = async (req, res) => {
 
     const ALLOWED_FIELDS = [
       'title', 'description', 'start_time', 'end_time', 
-      'location', 'budget', 'status', 'is_public', 'banner_url'
+      'location', 'budget', 'status', 'is_public', 'banner_url',
+      'submission_deadline', 'rules'
     ];
 
     let updatedData = {};
@@ -131,5 +132,56 @@ export const registerForEvent = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Registration failed' });
+  }
+};
+
+export const submitProjectHandler = async (req, res) => {
+  try {
+    const { project_link, description } = req.body;
+    const submissionData = {
+      event_id: req.params.id,
+      user_id: req.user.id,
+      project_link,
+      description
+    };
+    const submission = await EventModel.submitProject(submissionData);
+    res.status(201).json(submission);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Submission failed' });
+  }
+};
+
+export const getSubmissionsHandler = async (req, res) => {
+  try {
+    const event = await EventModel.getEventById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    
+    // Access control: Organizer or Admin only? Or everyone?
+    // User request said: "view submissions section leading to viewsubmissions page (available to everyone)"
+    // So everyone can view submissions.
+    
+    const submissions = await EventModel.getSubmissions(req.params.id);
+    res.json(submissions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to fetch submissions' });
+  }
+};
+
+export const reportIssueHandler = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const reportData = {
+      event_id: req.params.id,
+      user_id: req.user.id,
+      title,
+      description
+    };
+    const report = await EventModel.reportIssue(reportData);
+    res.status(201).json(report);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Reporting failed' });
   }
 };

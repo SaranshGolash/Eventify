@@ -11,6 +11,12 @@ import Events from '../pages/Events';
 import Resources from '../pages/Resources';
 import CreateEvent from '../pages/CreateEvent';
 import ViewEventDetails from '../pages/ViewEventDetails';
+import ViewSubmissions from '../pages/ViewSubmissions';
+import ProjectSubmission from '../pages/ProjectSubmission';
+import Rules from '../pages/Rules';
+import ReportIssue from '../pages/ReportIssue';
+
+
 
 function App() {
   return (
@@ -26,6 +32,10 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path="/events/create" element={<CreateEvent />} />
             <Route path="/view-event/:id" element={<ViewEventDetails />} />
+            <Route path="/view-event/:id/submissions" element={<ViewSubmissions />} />
+            <Route path="/view-event/:id/submit" element={<ProjectSubmission />} />
+            <Route path="/view-event/:id/rules" element={<Rules />} />
+            <Route path="/view-event/:id/report" element={<ReportIssue />} />
             <Route path="/resources" element={<Resources />} />
           </Routes>
         </main>

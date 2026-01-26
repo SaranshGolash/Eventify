@@ -5,7 +5,10 @@ import {
   getEvent, 
   updateEvent, 
   deleteEvent,
-  registerForEvent
+  registerForEvent,
+  submitProjectHandler,
+  getSubmissionsHandler,
+  reportIssueHandler
 } from '../controllers/eventController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -23,5 +26,12 @@ router.route('/:id')
   .delete(protect, deleteEvent);
 
 router.post('/:id/register', protect, registerForEvent);
+
+// New Routes
+
+
+router.post('/:id/submit', protect, submitProjectHandler);
+router.get('/:id/submissions', getSubmissionsHandler); // Public as per request "available to everyone"
+router.post('/:id/report', protect, reportIssueHandler);
 
 export default router;

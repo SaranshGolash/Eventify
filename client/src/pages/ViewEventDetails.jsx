@@ -226,6 +226,59 @@ const ViewEventDetails = () => {
                 </div>
               </div>
             </motion.div>
+
+
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100"
+              >
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => navigate(`/view-event/${id}/submissions`)}
+                    className="w-full text-left px-4 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors font-medium text-gray-700 flex items-center justify-between"
+                  >
+                    View Submissions <span className="text-gray-400">&rarr;</span>
+                  </button>
+
+                  <button 
+                    onClick={() => navigate(`/view-event/${id}/rules`)}
+                    className="w-full text-left px-4 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors font-medium text-gray-700 flex items-center justify-between"
+                  >
+                     Event Rules <span className="text-gray-400">&rarr;</span>
+                  </button>
+
+                  {/* Submission Logic: Participant only, and checks deadline */}
+                  {!isOrganizer && user && (
+                    <>
+                      {(!event.submission_deadline || new Date(event.submission_deadline) > new Date()) ? (
+                         <button 
+                          onClick={() => navigate(`/view-event/${id}/submit`)}
+                          className="w-full text-left px-4 py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 transition-colors font-medium text-indigo-700 flex items-center justify-between border border-indigo-100"
+                        >
+                          Submit Project <span className="text-indigo-400">&rarr;</span>
+                        </button>
+                      ) : (
+                         <div className="w-full px-4 py-3 rounded-xl bg-red-50 text-red-600 font-medium text-sm flex items-center justify-center border border-red-100">
+                          Submissions Closed
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {/* Report Issue: Logged in users */}
+                  {user && (
+                    <button 
+                      onClick={() => navigate(`/view-event/${id}/report`)}
+                      className="w-full text-left px-4 py-3 rounded-xl bg-white hover:bg-red-50 transition-colors font-medium text-red-600 border border-transparent hover:border-red-100 flex items-center justify-between"
+                    >
+                      Report an Issue <span className="text-red-300">&rarr;</span>
+                    </button>
+                  )}
+                </div>
+              </motion.div>
           </div>
 
         </div>

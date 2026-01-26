@@ -11,20 +11,23 @@ export const createEvent = async (eventData) => {
     club_id,
     budget,
     banner_url,
+    submission_deadline,
+    rules,
   } = eventData;
 
   const query = `
     INSERT INTO events (
       title, description, start_time, end_time, location, 
-      organizer_id, club_id, budget, banner_url
+      organizer_id, club_id, budget, banner_url, submission_deadline, rules
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *;
   `;
   
   const values = [
     title, description, start_time, end_time, location,
-    organizer_id, club_id, budget || 0.00, banner_url
+    organizer_id, club_id, budget || 0.00, banner_url,
+    submission_deadline || null, rules || null
   ];
 
   const result = await pool.query(query, values);
@@ -93,5 +96,41 @@ export const registerUserForEvent = async (userId, eventId) => {
 export const checkRegistration = async (userId, eventId) => {
   const query = 'SELECT * FROM event_registrations WHERE user_id = $1 AND event_id = $2';
   const result = await pool.query(query, [userId, eventId]);
+  return result.rows[0];
+};
+
+export const submitProject = async (submissionData) => {
+  const { event_id, user_id, project_link, description } = submissionData;
+  const query = `
+    INSERT INTO submissions (event_id, user_id, project_link, description)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (event_id, user_id) 
+    DO UPDATE SET project_link = $3, description = $4, submitted_at = CURRENT_TIMESTAMP
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [event_id, user_id, project_link, description]);
+  return result.rows[0];
+};
+
+export const getSubmissions = async (eventId) => {
+  const query = `
+    SELECT s.*, u.name as user_name, u.email as user_email
+    FROM submissions s
+    JOIN users u ON s.user_id = u.id
+    WHERE s.event_id = $1
+    ORDER BY s.submitted_at DESC;
+  `;
+  const result = await pool.query(query, [eventId]);
+  return result.rows;
+};
+
+export const reportIssue = async (reportData) => {
+  const { event_id, user_id, title, description } = reportData;
+  const query = `
+    INSERT INTO reports (event_id, user_id, title, description)
+    VALUES ($1, $2, $3, $4)
+    RETURNING *;
+  `;
+  const result = await pool.query(query, [event_id, user_id, title, description]);
   return result.rows[0];
 };
