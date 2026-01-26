@@ -67,7 +67,7 @@ export const updateEvent = async (req, res) => {
     const ALLOWED_FIELDS = [
       'title', 'description', 'start_time', 'end_time', 
       'location', 'budget', 'status', 'is_public', 'banner_url',
-      'submission_deadline', 'rules'
+      'submission_deadline', 'rules', 'registration_deadline'
     ];
 
     let updatedData = {};
@@ -121,6 +121,11 @@ export const registerForEvent = async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
 
+    // Check Registration Deadline
+    if (event.registration_deadline && new Date(event.registration_deadline) < new Date()) {
+      return res.status(400).json({ message: 'Registration deadline has passed' });
+    }
+
     // Check if already registered
     const existingRegistration = await EventModel.checkRegistration(userId, eventId);
     if (existingRegistration) {
@@ -135,11 +140,48 @@ export const registerForEvent = async (req, res) => {
   }
 };
 
+export const unregisterForEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const userId = req.user.id;
+
+    const event = await EventModel.getEventById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Check Registration Deadline for unregistering as well
+    if (event.registration_deadline && new Date(event.registration_deadline) < new Date()) {
+      return res.status(400).json({ message: 'Deadline has passed. You cannot unregister.' });
+    }
+
+    const existingRegistration = await EventModel.checkRegistration(userId, eventId);
+    if (!existingRegistration) {
+      return res.status(400).json({ message: 'You are not registered for this event' });
+    }
+
+    await EventModel.unregisterUserFromEvent(userId, eventId);
+    res.json({ message: 'Successfully unregistered from event' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Unregistration failed' });
+  }
+};
+
 export const submitProjectHandler = async (req, res) => {
   try {
+    const eventId = req.params.id;
+    const event = await EventModel.getEventById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    // Check Submission Deadline
+    if (event.submission_deadline && new Date(event.submission_deadline) < new Date()) {
+      return res.status(400).json({ message: 'Submission deadline has passed' });
+    }
+
     const { project_link, description } = req.body;
     const submissionData = {
-      event_id: req.params.id,
+      event_id: eventId,
       user_id: req.user.id,
       project_link,
       description

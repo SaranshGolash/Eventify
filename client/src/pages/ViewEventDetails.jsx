@@ -45,6 +45,20 @@ const ViewEventDetails = () => {
     }
   };
 
+  const handleUnregister = async () => {
+    if (!window.confirm('Are you sure you want to unregister from this event?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      const config = { headers: { Authorization: `Bearer ${token}` } };
+      await axios.delete(`http://localhost:5000/api/events/${id}/register`, config);
+      setRegistered(false);
+      alert('Successfully unregistered from the event!');
+    } catch (error) {
+      console.error('Unregistration failed:', error);
+      alert(error.response?.data?.message || 'Unregistration failed');
+    }
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -90,6 +104,8 @@ const ViewEventDetails = () => {
   const isOrganizer = user && (user.id === event.organizer_id || user.role === 'admin');
   const eventDate = new Date(event.start_time).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const eventTime = new Date(event.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const regDeadline = event.registration_deadline ? new Date(event.registration_deadline) : null;
+  const isRegClosed = regDeadline && regDeadline < new Date();
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -182,6 +198,11 @@ const ViewEventDetails = () => {
                   <div>
                     <p className="font-medium text-gray-900">Date & Time</p>
                     <p>{eventDate} at {eventTime}</p>
+                    {regDeadline && (
+                      <p className="text-xs text-red-500 mt-1">
+                        Register by: {regDeadline.toLocaleDateString()}
+                      </p>
+                    )}
                   </div>
                 </div>
                 
@@ -203,21 +224,39 @@ const ViewEventDetails = () => {
 
                 <div className="pt-4 border-t border-gray-100">
                   {!isOrganizer ? (
-                    <button 
-                      onClick={handleRegister}
-                      disabled={registered}
-                      className={`w-full py-3 rounded-xl font-bold text-white transition-all shadow-lg ${
-                        registered 
-                          ? 'bg-green-500 cursor-default' 
-                          : 'bg-gradient-to-r from-primary to-secondary hover:shadow-primary/30 transform hover:-translate-y-0.5'
-                      }`}
-                    >
+
+                    <>
                       {registered ? (
-                        <span className="flex items-center justify-center gap-2"><FaCheck /> Registered</span>
+                        <>
+                          <button 
+                            disabled={true}
+                            className="w-full py-3 rounded-xl font-bold text-white bg-green-500 cursor-default shadow-lg flex items-center justify-center gap-2 mb-3"
+                          >
+                             <FaCheck /> Registered
+                          </button>
+                          {!isRegClosed && (
+                            <button 
+                              onClick={handleUnregister}
+                              className="w-full py-2 rounded-xl font-medium text-red-500 border border-red-200 hover:bg-red-50 transition-colors text-sm"
+                            >
+                              Unregister
+                            </button>
+                          )}
+                        </>
                       ) : (
-                        'Register Now'
+                        <button 
+                          onClick={handleRegister}
+                          disabled={isRegClosed}
+                          className={`w-full py-3 rounded-xl font-bold text-white transition-all shadow-lg ${
+                            isRegClosed
+                              ? 'bg-gray-400 cursor-not-allowed' 
+                              : 'bg-gradient-to-r from-primary to-secondary hover:shadow-primary/30 transform hover:-translate-y-0.5'
+                          }`}
+                        >
+                          {isRegClosed ? 'Registration Closed' : 'Register Now'}
+                        </button>
                       )}
-                    </button>
+                    </>
                   ) : (
                     <div className="text-center p-3 bg-indigo-50 text-indigo-700 rounded-xl font-medium border border-indigo-100">
                       You are managing this event

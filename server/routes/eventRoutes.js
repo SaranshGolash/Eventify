@@ -5,7 +5,9 @@ import {
   getEvent, 
   updateEvent, 
   deleteEvent,
+
   registerForEvent,
+  unregisterForEvent,
   submitProjectHandler,
   getSubmissionsHandler,
   reportIssueHandler
@@ -25,7 +27,10 @@ router.route('/:id')
   .put(protect, upload.single('image'), updateEvent)
   .delete(protect, deleteEvent);
 
+// Register
 router.post('/:id/register', protect, registerForEvent);
+// Unregister
+router.delete('/:id/register', protect, unregisterForEvent);
 
 // New Routes
 

@@ -13,21 +13,22 @@ export const createEvent = async (eventData) => {
     banner_url,
     submission_deadline,
     rules,
+    registration_deadline,
   } = eventData;
 
   const query = `
     INSERT INTO events (
       title, description, start_time, end_time, location, 
-      organizer_id, club_id, budget, banner_url, submission_deadline, rules
+      organizer_id, club_id, budget, banner_url, submission_deadline, rules, registration_deadline
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     RETURNING *;
   `;
   
   const values = [
     title, description, start_time, end_time, location,
     organizer_id, club_id, budget || 0.00, banner_url,
-    submission_deadline || null, rules || null
+    submission_deadline || null, rules || null, registration_deadline || null
   ];
 
   const result = await pool.query(query, values);
@@ -89,6 +90,12 @@ export const registerUserForEvent = async (userId, eventId) => {
     VALUES ($1, $2)
     RETURNING *;
   `;
+  const result = await pool.query(query, [userId, eventId]);
+  return result.rows[0];
+};
+
+export const unregisterUserFromEvent = async (userId, eventId) => {
+  const query = 'DELETE FROM event_registrations WHERE user_id = $1 AND event_id = $2 RETURNING *';
   const result = await pool.query(query, [userId, eventId]);
   return result.rows[0];
 };
