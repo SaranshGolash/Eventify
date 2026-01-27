@@ -4,7 +4,22 @@ import pool from '../db.js';
 export const protect = async (req, res, next) => {
   let token;
 
-  if (
+  token = req.cookies.jwt;
+
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      const query = 'SELECT id, name, email, role FROM users WHERE id = $1';
+      const result = await pool.query(query, [decoded.id]);
+      
+      req.user = result.rows[0];
+      next();
+    } catch (error) {
+      console.error(error);
+      res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+  } else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {

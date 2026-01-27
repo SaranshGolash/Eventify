@@ -24,9 +24,20 @@ export const register = async (req, res) => {
 
     const user = await createUser(name, email, hashedPassword, role);
 
+    const token = generateToken(user.id);
+
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== 'development', // Use secure cookies in production
+      sameSite: 'strict', // Prevent CSRF attacks
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
+
     res.status(201).json({
-      ...user,
-      token: generateToken(user.id),
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     });
   } catch (error) {
     console.error(error);
@@ -45,12 +56,20 @@ export const login = async (req, res) => {
     const user = await findUserByEmail(email);
 
     if (user && (await bcrypt.compare(password, user.password))) {
+      const token = generateToken(user.id);
+      
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        sameSite: 'strict',
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
       res.json({
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user.id),
       });
     } else {
       res.status(400).json({ message: 'Invalid credentials' });
@@ -59,6 +78,14 @@ export const login = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
+};
+
+export const logout = (req, res) => {
+  res.cookie('jwt', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: 'Logged out successfully' });
 };
 
 export const getMe = async (req, res) => {
