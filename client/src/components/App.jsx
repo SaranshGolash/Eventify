@@ -15,6 +15,7 @@ import ViewSubmissions from '../pages/ViewSubmissions';
 import ProjectSubmission from '../pages/ProjectSubmission';
 import Rules from '../pages/Rules';
 import ReportIssue from '../pages/ReportIssue';
+import PaymentPage from '../pages/PaymentPage';
 
 
 
@@ -37,6 +38,7 @@ function App() {
             <Route path="/view-event/:id/rules" element={<Rules />} />
             <Route path="/view-event/:id/report" element={<ReportIssue />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/payment" element={<PaymentPage />} />
           </Routes>
         </main>
         <Footer />

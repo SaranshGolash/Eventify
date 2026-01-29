@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
 import { FaUser, FaEnvelope, FaLock, FaBuilding, FaEye, FaEyeSlash } from 'react-icons/fa';
+import GoogleLoginButton from '../../components/GoogleLoginButton';
 
 const Register = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'participant' });
@@ -130,6 +131,14 @@ const Register = () => {
           >
             Sign Up
           </button>
+
+          <div className="relative flex py-5 items-center">
+            <div className="flex-grow border-t border-gray-200"></div>
+            <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">Or sign up with</span>
+            <div className="flex-grow border-t border-gray-200"></div>
+          </div>
+
+          <GoogleLoginButton />>
         </form>
 
         <div className="mt-8 text-center text-sm text-gray-600">

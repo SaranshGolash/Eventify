@@ -1,12 +1,12 @@
 import pool from '../db.js';
 
-export const createUser = async (name, email, password, role = 'participant') => {
+export const createUser = async (name, email, password, role = 'participant', googleId = null, avatar = null) => {
   const query = `
-    INSERT INTO users (name, email, password, role)
-    VALUES ($1, $2, $3, $4)
-    RETURNING id, name, email, role, created_at;
+    INSERT INTO users (name, email, password, role, google_id, avatar)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, name, email, role, created_at, avatar;
   `;
-  const values = [name, email, password, role];
+  const values = [name, email, password, role, googleId, avatar];
   const result = await pool.query(query, values);
   return result.rows[0];
 };

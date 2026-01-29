@@ -38,12 +38,73 @@ export const register = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      avatar: user.avatar
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error: ' + error.message });
   }
 };
+
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+export const googleLogin = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { name, email, picture, sub: googleId } = ticket.getPayload();
+
+    let user = await findUserByEmail(email);
+
+    if (user) {
+        // If user exists but no google_id, we might want to link accounts. 
+        // For now, checking if google_id matches or just logging in by email.
+        const token = generateToken(user.id);
+         res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar
+        });
+    } else {
+        // Create new user
+        const newUser = await createUser(name, email, null, 'participant', googleId, picture);
+        const token = generateToken(newUser.id);
+        
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV !== 'development',
+            sameSite: 'strict',
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.status(201).json({
+            id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            role: newUser.role,
+            avatar: newUser.avatar
+        });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message: "Google login failed: " + error.message});
+  }
+};
+
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
