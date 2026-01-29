@@ -15,7 +15,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
-    axios.post('http://localhost:5000/api/payments/create-payment-intent', { items: [{ id: "donation" }], amount })
+    axios.post('/api/payments/create-payment-intent', { items: [{ id: "donation" }], amount })
       .then((res) => setClientSecret(res.data.clientSecret));
   }, []);
 

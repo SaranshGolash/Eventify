@@ -8,7 +8,7 @@ const GoogleLoginButton = () => {
 
   const handleSuccess = async (credentialResponse) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/google-login', {
+      const res = await axios.post('/api/auth/google-login', {
         token: credentialResponse.credential,
       });
 
