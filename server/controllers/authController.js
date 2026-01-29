@@ -100,8 +100,10 @@ export const googleLogin = async (req, res) => {
         });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({message: "Google login failed: " + error.message});
+    console.error("Google Login Error Detailed:", error);
+    console.log("GOOGLE_CLIENT_ID used:", process.env.GOOGLE_CLIENT_ID); // CAUTION: Logs ID to console
+    console.log("Token received length:", token ? token.length : 0);
+    res.status(500).json({message: "Google login failed: " + error.message, details: error.toString()});
   }
 };
 
