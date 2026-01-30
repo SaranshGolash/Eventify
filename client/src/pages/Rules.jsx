@@ -17,7 +17,7 @@ const Rules = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/events/${id}`);
+        const response = await axios.get(`/api/events/${id}`);
         setEventData(response.data);
         setRules(response.data.rules || '');
       } catch (error) {
@@ -33,7 +33,7 @@ const Rules = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.put(`http://localhost:5000/api/events/${id}`, { rules }, config);
+      await axios.put(`/api/events/${id}`, { rules }, config);
       setIsEditing(false);
       alert('Rules updated successfully!');
     } catch (error) {

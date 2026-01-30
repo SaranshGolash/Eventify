@@ -16,7 +16,7 @@ const ReportIssue = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post(`http://localhost:5000/api/events/${id}/report`, formData, config);
+      await axios.post(`/api/events/${id}/report`, formData, config);
       alert('Issue reported successfully. The organizers will look into it.');
       navigate(`/view-event/${id}`);
     } catch (error) {

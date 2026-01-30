@@ -18,7 +18,7 @@ const ProjectSubmission = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post(`http://localhost:5000/api/events/${id}/submit`, formData, config);
+      await axios.post(`/api/events/${id}/submit`, formData, config);
       alert('Project submitted successfully!');
       navigate(`/view-event/${id}`);
     } catch (error) {

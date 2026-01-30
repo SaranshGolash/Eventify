@@ -14,8 +14,8 @@ const ViewSubmissions = () => {
     const fetchData = async () => {
       try {
         const [eventRes, submissionsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/events/${id}`),
-          axios.get(`http://localhost:5000/api/events/${id}/submissions`)
+          axios.get(`/api/events/${id}`),
+          axios.get(`/api/events/${id}/submissions`)
         ]);
         setEventTitle(eventRes.data.title);
         setSubmissions(submissionsRes.data);

@@ -19,7 +19,7 @@ const ViewEventDetails = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/events/${id}`);
+        const response = await axios.get(`/api/events/${id}`);
         setEvent(response.data);
         setFormData(response.data);
         // Here you would also check if the current user is already registered for this event
@@ -36,7 +36,7 @@ const ViewEventDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post(`http://localhost:5000/api/events/${id}/register`, {}, config);
+      await axios.post(`/api/events/${id}/register`, {}, config);
       setRegistered(true);
       alert('Successfully registered for the event!');
     } catch (error) {
@@ -50,7 +50,7 @@ const ViewEventDetails = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.delete(`http://localhost:5000/api/events/${id}/register`, config);
+      await axios.delete(`/api/events/${id}/register`, config);
       setRegistered(false);
       alert('Successfully unregistered from the event!');
     } catch (error) {
@@ -80,7 +80,7 @@ const ViewEventDetails = () => {
         },
       };
 
-      const response = await axios.put(`http://localhost:5000/api/events/${id}`, data, config);
+      const response = await axios.put(`/api/events/${id}`, data, config);
       setEvent(response.data);
       setIsEditing(false);
       alert('Event updated successfully!');

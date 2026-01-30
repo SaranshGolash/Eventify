@@ -40,7 +40,7 @@ const CreateEvent = () => {
         },
       };
       
-      await axios.post('http://localhost:5000/api/events', data, config);
+      await axios.post('/api/events', data, config);
       navigate('/events');
     } catch (error) {
       console.error('Error creating event:', error.response?.data || error.message);

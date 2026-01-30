@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaSearch, FaFilter, FaCalendarAlt, FaMapMarkerAlt, FaPlus, FaCheck } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
 
 const EventCard = ({ event, index }) => {
   const eventDate = new Date(event.start_time).toLocaleDateString('en-US', {
@@ -66,9 +67,8 @@ const Events = () => {
   React.useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/events');
-        const data = await response.json();
-        setEvents(data);
+        const response = await axios.get('/api/events');
+        setEvents(response.data);
       } catch (error) {
         console.error('Error fetching events:', error);
       } finally {
