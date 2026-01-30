@@ -7,6 +7,8 @@ import pool from './db.js';
 import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import clubRoutes from './routes/clubRoutes.js';
+import resourceRoutes from './routes/resourceRoutes.js';
 
 dotenv.config();
 
@@ -26,6 +28,8 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/clubs', clubRoutes);
+app.use('/api/resources', resourceRoutes);
 
 // Test DB Connection Route
 app.get('/api/health', async (req, res) => {
