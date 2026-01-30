@@ -74,6 +74,7 @@ const updateSchema = async () => {
     }
   } catch (err) {
     console.error('Schema update failed:', err);
+    process.exit(1);
   } finally {
     pool.end();
   }

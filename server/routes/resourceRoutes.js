@@ -4,7 +4,7 @@ import {
   getAllResources, 
   checkAvailability, 
   bookResource,
-  createCheckoutSession
+  createCheckoutSession,
 } from '../controllers/resourceController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
@@ -17,5 +17,6 @@ router.route('/')
 router.get('/:id/availability', checkAvailability);
 router.post('/book', protect, bookResource);
 router.post('/create-checkout-session', protect, createCheckoutSession);
+router.get('/fix-schema', fixSchema);
 
 export default router;

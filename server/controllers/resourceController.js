@@ -1,4 +1,5 @@
 import * as ResourceModel from '../models/ResourceModel.js';
+import pool from '../db.js';
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -126,5 +127,33 @@ export const createCheckoutSession = async (req, res) => {
   } catch (error) {
     console.error('Error creating checkout session:', error);
     res.status(500).json({ error: 'Failed to create checkout session' });
+  }
+};
+
+export const fixSchema = async (req, res) => {
+  try {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(`
+        ALTER TABLE resources ADD COLUMN IF NOT EXISTS price_per_hour DECIMAL(10, 2) DEFAULT 0.00;
+      `);
+      await client.query(`
+        ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment_status VARCHAR(50) DEFAULT 'pending';
+      `);
+      await client.query(`
+        ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment_intent_id VARCHAR(255);
+      `);
+      await client.query('COMMIT');
+      res.json({ message: 'Schema fixed successfully' });
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Manual schema fix failed:', error);
+    res.status(500).json({ error: error.message });
   }
 };
