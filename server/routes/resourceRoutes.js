@@ -3,7 +3,6 @@ import {
   createResource, 
   getAllResources, 
   checkAvailability, 
-  checkAvailability, 
   bookResource,
   createCheckoutSession
 } from '../controllers/resourceController.js';
