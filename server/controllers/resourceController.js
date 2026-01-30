@@ -7,7 +7,13 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createResource = async (req, res) => {
   try {
-    const { name, type, capacity, description, image_url, price_per_hour } = req.body;
+    const name = req.body.name;
+    const type = req.body.type;
+    const capacity = parseInt(req.body.capacity) || 0;
+    const description = req.body.description;
+    const image_url = req.body.image_url;
+    const price_per_hour = parseFloat(req.body.price_per_hour) || 0.00;
+
     // User request: let all the users add resources
     // if (req.user.role !== 'admin' && req.user.role !== 'organizer') {
     //     return res.status(403).json({ message: 'Not authorized' });
@@ -18,8 +24,8 @@ export const createResource = async (req, res) => {
     });
     res.status(201).json(newResource);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to create resource' });
+    console.error('Error creating resource:', error);
+    res.status(500).json({ message: 'Failed to create resource', error: error.message });
   }
 };
 
