@@ -1,15 +1,20 @@
 import * as ResourceModel from '../models/ResourceModel.js';
+import Stripe from 'stripe';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createResource = async (req, res) => {
   try {
-    const { name, type, capacity, description, image_url } = req.body;
-    // Only admin usually? For now let authenticated users create resources (or restrict later)
-    if (req.user.role !== 'admin' && req.user.role !== 'organizer') {
-        return res.status(403).json({ message: 'Not authorized' });
-    }
+    const { name, type, capacity, description, image_url, price_per_hour } = req.body;
+    // User request: let all the users add resources
+    // if (req.user.role !== 'admin' && req.user.role !== 'organizer') {
+    //     return res.status(403).json({ message: 'Not authorized' });
+    // }
 
     const newResource = await ResourceModel.createResource({ 
-        name, type, capacity, description, image_url 
+        name, type, capacity, description, image_url, price_per_hour 
     });
     res.status(201).json(newResource);
   } catch (error) {
@@ -61,11 +66,59 @@ export const bookResource = async (req, res) => {
         event_id,
         start_time,
         end_time,
-        purpose
+        purpose,
+        payment_status: 'pending' // Default
     });
     res.status(201).json(booking);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to book resource' });
+  }
+};
+
+export const createCheckoutSession = async (req, res) => {
+  try {
+    const { resource, bookingDetails } = req.body;
+    
+    // Calculate duration in hours
+    const start = new Date(bookingDetails.start_time);
+    const end = new Date(bookingDetails.end_time);
+    const durationHours = Math.abs(end - start) / 36e5;
+    
+    // Calculate total amount (cent multiplier)
+    const unitAmount = Math.round(resource.price_per_hour * 100); 
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd', // Adjust as needed
+            product_data: {
+              name: `Booking: ${resource.name}`,
+              description: `Booking from ${start.toLocaleString()} to ${end.toLocaleString()}`,
+              images: resource.image_url ? [resource.image_url] : [],
+            },
+            unit_amount: unitAmount,
+          },
+          quantity: Math.ceil(durationHours),
+        },
+      ],
+      mode: 'payment',
+      success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/resources?success=true&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/resources?canceled=true`,
+      metadata: {
+        resource_id: resource.id,
+        user_id: req.user.id,
+        start_time: bookingDetails.start_time,
+        end_time: bookingDetails.end_time,
+        purpose: bookingDetails.purpose
+      }
+    });
+
+    res.json({ id: session.id });
+  } catch (error) {
+    console.error('Error creating checkout session:', error);
+    res.status(500).json({ error: 'Failed to create checkout session' });
   }
 };

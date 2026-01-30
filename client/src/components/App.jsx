@@ -9,6 +9,7 @@ import Register from '../pages/auth/Register';
 import Dashboard from '../pages/Dashboard';
 import Events from '../pages/Events';
 import Resources from '../pages/Resources';
+import AddResource from '../pages/AddResource';
 import CreateEvent from '../pages/CreateEvent';
 import ViewEventDetails from '../pages/ViewEventDetails';
 import ViewSubmissions from '../pages/ViewSubmissions';
@@ -38,6 +39,7 @@ function App() {
             <Route path="/view-event/:id/rules" element={<Rules />} />
             <Route path="/view-event/:id/report" element={<ReportIssue />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/resources/add" element={<AddResource />} />
             <Route path="/payment" element={<PaymentPage />} />
           </Routes>
         </main>

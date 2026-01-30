@@ -1,10 +1,10 @@
 import pool from '../db.js';
 
 export const createResource = async (resourceData) => {
-  const { name, type, capacity, description, image_url } = resourceData;
+  const { name, type, capacity, description, image_url, price_per_hour } = resourceData;
   const result = await pool.query(
-    'INSERT INTO resources (name, type, capacity, description, image_url) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-    [name, type, capacity, description, image_url]
+    'INSERT INTO resources (name, type, capacity, description, image_url, price_per_hour) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+    [name, type, capacity, description, image_url, price_per_hour || 0.00]
   );
   return result.rows[0];
 };
@@ -20,10 +20,18 @@ export const getResourceById = async (id) => {
 };
 
 export const createBooking = async (bookingData) => {
-  const { resource_id, user_id, event_id, start_time, end_time, purpose } = bookingData;
+  const { resource_id, user_id, event_id, start_time, end_time, purpose, payment_status, payment_intent_id } = bookingData;
   const result = await pool.query(
-    'INSERT INTO bookings (resource_id, user_id, event_id, start_time, end_time, purpose) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-    [resource_id, user_id, event_id, start_time, end_time, purpose]
+    'INSERT INTO bookings (resource_id, user_id, event_id, start_time, end_time, purpose, payment_status, payment_intent_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+    [resource_id, user_id, event_id, start_time, end_time, purpose, payment_status || 'pending', payment_intent_id]
+  );
+  return result.rows[0];
+};
+
+export const updateBookingPaymentStatus = async (paymentIntentId, status) => {
+  const result = await pool.query(
+    'UPDATE bookings SET payment_status = $1 WHERE payment_intent_id = $2 RETURNING *',
+    [status, paymentIntentId]
   );
   return result.rows[0];
 };
