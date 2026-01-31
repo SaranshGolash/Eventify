@@ -104,7 +104,7 @@ export const createCheckoutSession = async (req, res) => {
             product_data: {
               name: `Booking: ${resource.name}`,
               description: `Booking from ${start.toLocaleString()} to ${end.toLocaleString()}`,
-              images: resource.image_url ? [resource.image_url] : [],
+              images: (resource.image_url && resource.image_url.startsWith('http')) ? [resource.image_url] : [],
             },
             unit_amount: unitAmount,
           },
@@ -126,7 +126,7 @@ export const createCheckoutSession = async (req, res) => {
     res.json({ id: session.id });
   } catch (error) {
     console.error('Error creating checkout session:', error);
-    res.status(500).json({ error: 'Failed to create checkout session' });
+    res.status(500).json({ error: 'Failed to create checkout session', details: error.message });
   }
 };
 
