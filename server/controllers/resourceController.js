@@ -12,7 +12,7 @@ export const createResource = async (req, res) => {
     const type = req.body.type;
     const capacity = parseInt(req.body.capacity) || 0;
     const description = req.body.description;
-    const image_url = req.body.image_url;
+    const image_url = req.body.image_url || '';
     const price_per_hour = parseFloat(req.body.price_per_hour) || 0.00;
 
     // User request: let all the users add resources

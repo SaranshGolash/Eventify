@@ -29,7 +29,8 @@ const AddResource = () => {
       navigate('/resources');
     } catch (error) {
       console.error('Error adding resource:', error);
-      alert('Failed to add resource. Please try again.');
+      console.error('Server response:', error.response?.data);
+      alert(`Failed to add resource: ${error.response?.data?.message || error.response?.data?.error || error.message}`);
     }
   };
 
