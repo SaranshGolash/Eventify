@@ -61,14 +61,11 @@ const Resources = () => {
         bookingDetails: bookingData
       }, config);
 
-      const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({
-        sessionId: response.data.id,
-      });
-
-      if (error) {
-        console.error('Stripe redirect error:', error);
-        alert('Failed to redirect to payment.');
+      const { url } = response.data;
+      if (url) {
+        window.location.href = url;
+      } else {
+        alert('Failed to get payment URL from server.');
       }
     } catch (error) {
       console.error('Booking failed:', error);

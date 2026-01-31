@@ -123,7 +123,7 @@ export const createCheckoutSession = async (req, res) => {
       }
     });
 
-    res.json({ id: session.id });
+    res.json({ id: session.id, url: session.url });
   } catch (error) {
     console.error('Error creating checkout session:', error);
     res.status(500).json({ error: 'Failed to create checkout session', details: error.message });
