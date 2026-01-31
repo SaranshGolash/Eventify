@@ -44,7 +44,11 @@ app.get('/api/health', async (req, res) => {
 
 import initializeDatabase from './initializeDatabase.js';
 
-initializeDatabase().then(() => {
+import { updateSchema } from './update_resources_schema.js';
+
+initializeDatabase()
+  .then(() => updateSchema())
+  .then(() => {
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

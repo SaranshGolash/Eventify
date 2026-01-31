@@ -1,13 +1,19 @@
 import pool from './db.js';
+import { fileURLToPath } from 'url';
 
-const updateSchema = async () => {
+export const updateSchema = async () => {
+  // Use a separate client for transaction safety if needed, 
+  // but existing pool usage is fine if we release correctly.
+  // However, the original code used pool.connect() and client.query().
+  
+  let client; 
   try {
     console.log('Starting schema update for Resources and Bookings...');
-    const client = await pool.connect();
+    client = await pool.connect();
     try {
       await client.query('BEGIN');
 
-      // 1. Ensure resources table exists and has price_per_hour
+      // 1. Ensure resources table exists
       await client.query(`
         CREATE TABLE IF NOT EXISTS resources (
           id SERIAL PRIMARY KEY,
@@ -37,7 +43,7 @@ const updateSchema = async () => {
       console.log('Updated resources table.');
 
 
-      // 2. Ensure bookings table exists and has payment columns
+      // 2. Ensure bookings table exists
       await client.query(`
         CREATE TABLE IF NOT EXISTS bookings (
           id SERIAL PRIMARY KEY,
@@ -77,10 +83,20 @@ const updateSchema = async () => {
     }
   } catch (err) {
     console.error('Schema update failed:', err);
-    process.exit(1);
+    // Do not exit if called from index.js, but maybe throw so index.js knows?
+    // For now, just log. index.js continues.
+    if (process.argv[1] === fileURLToPath(import.meta.url)) {
+       process.exit(1);
+    }
   } finally {
-    pool.end();
+    // Only close pool if running directly script, not if imported in app
+    if (process.argv[1] === fileURLToPath(import.meta.url)) {
+      pool.end();
+    }
   }
 };
 
-updateSchema();
+// If run directly
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  updateSchema();
+}
