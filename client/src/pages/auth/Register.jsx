@@ -138,7 +138,7 @@ const Register = () => {
             <div className="flex-grow border-t border-gray-200"></div>
           </div>
 
-          <GoogleLoginButton />>
+          <GoogleLoginButton />
         </form>
 
         <div className="mt-8 text-center text-sm text-gray-600">

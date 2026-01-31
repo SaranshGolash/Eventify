@@ -5,6 +5,7 @@ import {
   checkAvailability, 
   bookResource,
   createCheckoutSession,
+  fixSchema,
 } from '../controllers/resourceController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
