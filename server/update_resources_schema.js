@@ -42,6 +42,30 @@ export const updateSchema = async () => {
       `);
       console.log('Updated resources table.');
 
+      // 1.5 Ensure events table has new columns
+      await client.query(`
+        DO $$
+        BEGIN
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='registration_deadline') THEN
+                ALTER TABLE events ADD COLUMN registration_deadline TIMESTAMP;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='submission_deadline') THEN
+                ALTER TABLE events ADD COLUMN submission_deadline TIMESTAMP;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='rules') THEN
+                ALTER TABLE events ADD COLUMN rules TEXT;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='banner_url') THEN
+                ALTER TABLE events ADD COLUMN banner_url VARCHAR(500);
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='events' AND column_name='club_id') THEN
+                ALTER TABLE events ADD COLUMN club_id INTEGER REFERENCES clubs(id);
+            END IF;
+        END
+        $$;
+      `);
+      console.log('Updated events table.');
+
 
       // 2. Ensure bookings table exists
       await client.query(`
