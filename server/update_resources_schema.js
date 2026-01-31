@@ -28,6 +28,9 @@ const updateSchema = async () => {
             IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='resources' AND column_name='price_per_hour') THEN
                 ALTER TABLE resources ADD COLUMN price_per_hour DECIMAL(10, 2) DEFAULT 0.00;
             END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='resources' AND column_name='image_url') THEN
+                ALTER TABLE resources ADD COLUMN image_url TEXT;
+            END IF;
         END
         $$;
       `);
