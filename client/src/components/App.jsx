@@ -17,6 +17,7 @@ import ProjectSubmission from '../pages/ProjectSubmission';
 import Rules from '../pages/Rules';
 import ReportIssue from '../pages/ReportIssue';
 import PaymentPage from '../pages/PaymentPage';
+import Profile from '../pages/Profile';
 
 
 
@@ -28,6 +29,7 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
